@@ -64,6 +64,47 @@ export const getDebtorDueDateInput = (debtor: Partial<DebtorDueShape> | null | u
   return dueDate ? toDateInputValue(dueDate) : getDefaultDebtDueDateInput();
 };
 
+export const formatDueDateOptionLabel = (value: string) => {
+  const parsedDate = parseDateValue(value);
+  if (!parsedDate) {
+    return value;
+  }
+
+  return parsedDate.toLocaleDateString('uz-UZ', {
+    day: 'numeric',
+    month: 'long',
+  });
+};
+
+export const getDueDatePickerOptions = (
+  selectedValue?: string | null,
+  referenceDate = new Date(),
+  totalDays = 365
+) => {
+  const startDate = normalizeToStartOfDay(referenceDate);
+  const seenValues = new Set<string>();
+  const options: Array<{ value: string; label: string }> = [];
+
+  for (let index = 0; index <= totalDays; index += 1) {
+    const optionDate = addDays(startDate, index);
+    const value = toDateInputValue(optionDate);
+    seenValues.add(value);
+    options.push({
+      value,
+      label: formatDueDateOptionLabel(value),
+    });
+  }
+
+  if (selectedValue?.trim() && !seenValues.has(selectedValue)) {
+    options.unshift({
+      value: selectedValue,
+      label: formatDueDateOptionLabel(selectedValue),
+    });
+  }
+
+  return options;
+};
+
 export const resolveDueDateForSave = (dueDate: string | null | undefined, referenceDate = new Date()) => {
   if (dueDate?.trim()) {
     return dueDate;

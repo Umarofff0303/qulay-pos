@@ -25,7 +25,9 @@ import { AdminLayout } from '@/components/AdminLayout';
 import { BarcodeScannerDialog } from '@/components/BarcodeScannerDialog';
 import { findByBarcode } from '@/lib/barcode';
 import {
+  formatDueDateOptionLabel,
   getDebtorDueDateInput,
+  getDueDatePickerOptions,
   getDefaultDebtDueDateInput,
   isMissingDueDateColumnError,
   resolveDueDateForSave,
@@ -171,6 +173,7 @@ export default function POSPage() {
   const dueDate = watch('dueDate');
   const selectedDebtor =
     debtors.find((debtor) => debtor.id === selectedDebtorId) || null;
+  const dueDateOptions = getDueDatePickerOptions(dueDate || getDefaultDebtDueDateInput());
 
   const formatCurrency = (value: number) =>
     new Intl.NumberFormat('uz-UZ', {
@@ -1192,17 +1195,24 @@ export default function POSPage() {
                       {...field}
                       fullWidth
                       label="Qaytarish muddati"
-                      type="date"
+                      select
                       margin="normal"
+                      SelectProps={{ native: true }}
                       InputLabelProps={{ shrink: true }}
                       error={!!errors.dueDate}
                       helperText={
                         errors.dueDate?.message ||
                         (selectedDebtor
-                          ? 'Kerak bo`lsa mavjud qarzdor uchun yangi muddat qo`ying'
-                          : 'Qarzning qaytarish sanasini belgilang')
+                          ? `Hozirgi muddat: ${formatDueDateOptionLabel(field.value || getDefaultDebtDueDateInput())}`
+                          : 'Faqat kun va oy ko`rinadigan scroll ro`yxatdan muddatni tanlang')
                       }
-                    />
+                    >
+                      {dueDateOptions.map((option) => (
+                        <option key={option.value} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
+                    </TextField>
                   )}
                 />
 

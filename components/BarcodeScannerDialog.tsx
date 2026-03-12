@@ -60,6 +60,7 @@ export function BarcodeScannerDialog({
   const scannerId = useId().replace(/:/g, '');
   const scannerRef = useRef<Html5Qrcode | null>(null);
   const detectedRef = useRef(false);
+  const manualCameraSelectionRef = useRef(false);
   const onCloseRef = useRef(onClose);
   const onDetectedRef = useRef(onDetected);
   const [scannerLoading, setScannerLoading] = useState(false);
@@ -168,6 +169,7 @@ export function BarcodeScannerDialog({
       setTorchSupported(false);
       setTorchEnabled(false);
       setZoomSupported(false);
+      manualCameraSelectionRef.current = false;
       return;
     }
 
@@ -183,7 +185,16 @@ export function BarcodeScannerDialog({
         }
 
         setAvailableCameras(cameras);
-        setSelectedCameraId((currentCameraId) => currentCameraId || getPreferredCamera(cameras)?.id || '');
+        setSelectedCameraId((currentCameraId) => {
+          if (manualCameraSelectionRef.current && currentCameraId) {
+            return currentCameraId;
+          }
+
+          const rearCameraId =
+            cameras.find((camera) => /back|rear|environment/i.test(camera.label))?.id || '';
+
+          return rearCameraId;
+        });
       } catch {
         if (active) {
           setAvailableCameras([]);
@@ -248,20 +259,30 @@ export function BarcodeScannerDialog({
 
         const cameraCandidates: Array<string | MediaTrackConstraints> = [];
 
-        if (selectedCameraId) {
+        if (manualCameraSelectionRef.current && selectedCameraId) {
           cameraCandidates.push(selectedCameraId);
         }
 
         const preferredCameraId = getPreferredCamera(availableCameras)?.id;
+        cameraCandidates.push(
+          { facingMode: { exact: 'environment' } },
+          { facingMode: { ideal: 'environment' } },
+          { facingMode: 'environment' },
+        );
+
         if (preferredCameraId && preferredCameraId !== selectedCameraId) {
           cameraCandidates.push(preferredCameraId);
         }
 
-        cameraCandidates.push(
-          { facingMode: { exact: 'environment' } },
-          { facingMode: 'environment' },
-          { facingMode: 'user' }
-        );
+        if (!manualCameraSelectionRef.current && selectedCameraId) {
+          cameraCandidates.push(selectedCameraId);
+        }
+
+        const fallbackCameraIds = availableCameras
+          .map((camera) => camera.id)
+          .filter((cameraId) => cameraId && cameraId !== selectedCameraId && cameraId !== preferredCameraId);
+
+        cameraCandidates.push(...fallbackCameraIds, { facingMode: 'user' });
 
         const scanConfig = {
           fps: 10,
@@ -308,7 +329,12 @@ export function BarcodeScannerDialog({
           const trackSettings = scanner.getRunningTrackSettings() as MediaTrackSettings & {
             zoom?: number;
             torch?: boolean;
+            deviceId?: string;
           };
+
+          if (!manualCameraSelectionRef.current && trackSettings.deviceId) {
+            setSelectedCameraId(trackSettings.deviceId);
+          }
 
           setTorchSupported(Boolean(trackCapabilities.torch));
           setTorchEnabled(Boolean(trackSettings.torch));
@@ -374,9 +400,15 @@ export function BarcodeScannerDialog({
             select
             label="Kamera"
             value={selectedCameraId}
-            onChange={(event) => setSelectedCameraId(event.target.value)}
+            onChange={(event) => {
+              manualCameraSelectionRef.current = true;
+              setSelectedCameraId(event.target.value);
+            }}
             sx={{ mb: 2 }}
           >
+            <MenuItem value="">
+              Avtomatik (orqa kamera)
+            </MenuItem>
             {availableCameras.map((camera, index) => (
               <MenuItem key={camera.id} value={camera.id}>
                 {camera.label || `Kamera ${index + 1}`}
