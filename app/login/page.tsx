@@ -50,7 +50,7 @@ export default function LoginPage() {
     }
 
     if (normalized.includes('signup is disabled')) {
-      return "Bu loyiha uchun Supabase email ro'yxatdan o'tishi o'chirilgan. Uni Supabase Auth sozlamalarida yoqing.";
+      return "Bu loyiha uchun Supabase email ro'yxatdan o'tishi o'chirilgan. Uni Supabase Auth sozlamalarida yoqing";
     }
 
     return message;
