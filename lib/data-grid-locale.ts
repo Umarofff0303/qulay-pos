@@ -1,0 +1,55 @@
+import type { GridLocaleText } from '@mui/x-data-grid';
+
+export const uzDataGridLocaleText: Partial<GridLocaleText> = {
+  noRowsLabel: "Ma'lumot topilmadi",
+  noResultsOverlayLabel: "Natija topilmadi",
+  toolbarDensity: 'Zichlik',
+  toolbarDensityLabel: 'Jadval zichligi',
+  toolbarDensityCompact: 'Ixcham',
+  toolbarDensityStandard: "Standart",
+  toolbarDensityComfortable: 'Qulay',
+  toolbarColumns: 'Ustunlar',
+  toolbarColumnsLabel: 'Ustunlarni tanlash',
+  toolbarFilters: 'Filtrlar',
+  toolbarFiltersLabel: "Filtrlarni ko'rsatish",
+  toolbarFiltersTooltipHide: "Filtrlarni yashirish",
+  toolbarFiltersTooltipShow: "Filtrlarni ko'rsatish",
+  toolbarQuickFilterPlaceholder: "Qidirish...",
+  toolbarQuickFilterLabel: 'Qidiruv',
+  toolbarQuickFilterDeleteIconLabel: 'Tozalash',
+  toolbarExport: 'Eksport',
+  toolbarExportLabel: 'Eksport',
+  toolbarExportCSV: 'CSV yuklab olish',
+  toolbarExportPrint: 'Chop etish',
+  toolbarExportExcel: 'Excel yuklab olish',
+  footerTotalRows: 'Jami satrlar:',
+  footerTotalVisibleRows: (visibleCount, totalCount) =>
+    `${visibleCount.toLocaleString('uz-UZ')} / ${totalCount.toLocaleString('uz-UZ')}`,
+  footerRowSelected: (count) =>
+    count !== 1
+      ? `${count.toLocaleString('uz-UZ')} ta satr tanlandi`
+      : `${count.toLocaleString('uz-UZ')} ta satr tanlandi`,
+  columnMenuLabel: 'Menyu',
+  columnMenuShowColumns: "Ustunlarni ko'rsatish",
+  columnMenuManageColumns: "Ustunlarni boshqarish",
+  columnMenuFilter: 'Filtrlash',
+  columnMenuHideColumn: 'Ustunni yashirish',
+  columnMenuUnsort: "Saralashni bekor qilish",
+  columnMenuSortAsc: "A-Z bo'yicha saralash",
+  columnMenuSortDesc: "Z-A bo'yicha saralash",
+  filterPanelAddFilter: 'Filtr qo`shish',
+  filterPanelRemoveAll: "Hammasini olib tashlash",
+  filterPanelDeleteIconLabel: "O'chirish",
+  filterPanelLogicOperator: 'Mantiqiy operator',
+  filterPanelOperator: 'Operator',
+  filterPanelOperatorAnd: 'Va',
+  filterPanelOperatorOr: 'Yoki',
+  filterPanelColumns: 'Ustunlar',
+  filterPanelInputLabel: 'Qiymat',
+  filterPanelInputPlaceholder: 'Filtr qiymati',
+  MuiTablePagination: {
+    labelRowsPerPage: 'Sahifadagi qatorlar:',
+    labelDisplayedRows: ({ from, to, count }) =>
+      `${from}-${to} / ${count === -1 ? `${to}+` : count}`,
+  },
+};
